@@ -4,6 +4,15 @@
 
 ## Algorithms
 
+This tool implements the following algorithms:
+- Breadth-First Search - BFS
+- Depth-First Search - DFS
+- Topological sorting
+- AGM Kruskal
+- AGM Prim
+- Dijkstra
+- Bellman-Ford
+- Graph Coloring
 
 ## Screenshots
 
