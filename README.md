@@ -1,5 +1,4 @@
-![alt tag](https://raw.githubusercontent.com/thiagodnf/graph-js/master/img/logo.png)
-Versão 2.0
+<img src="https://raw.githubusercontent.com/thiagodnf/graph-js/master/img/logo.png" width="300px"/>
 
 **A Javascript and HTML5 based Graph Editor**
 
