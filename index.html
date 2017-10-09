@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Graph JS</title>	
+		<link rel="stylesheet" type="text/css" href="css/main.css" />			
+		<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.8.16.custom/css/smoothness/jquery-ui-1.8.16.custom.css">
+		<script type="text/javascript" src="js/jquery-ui-1.8.16.custom/js/jquery-1.6.2.min.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.8.16.custom/js/jquery-ui-1.8.16.custom.min.js"></script>
+		<script type="text/javascript" src="js/jquery-ui-1.8.16.custom/js/jquery.form.js"></script>
+		<script type="text/javascript" src="js/jquery.contextmenu.r2.js"></script>				
+	</head>
+	<body>
+	
+		<div id="divLogo">
+			<img alt="Logo" src="images/logo3.png">
+		</div>
+		
+		<div id="divMenuPrincipal">
+			<div class="divMenuPrincipal_botao">
+				<div class="divMenuPrincipal_icone">
+					<img src="images/open.gif">
+				</div>
+				<div class="divMenuPrincipal_texto">
+					<a href="#" id="menuAbrir">Abrir</a>
+				</div> 			
+			</div>
+			<div class="divMenuPrincipal_botao">
+				<div class="divMenuPrincipal_icone">
+					<img src="images/save.gif">
+				</div>
+				<div class="divMenuPrincipal_texto">
+					<a href="#" id="menuSalvar">Salvar</a>
+				</div> 			
+			</div>			
+			<div class="divMenuPrincipal_botao">
+				<div class="divMenuPrincipal_icone"><img src="images/vertice.png"></div>
+				<div class="divMenuPrincipal_texto"><a href="#" id="menuAdicionarVertice">Vertice</a></div> 			
+			</div>
+			<div class="divMenuPrincipal_botao">
+				<div class="divMenuPrincipal_icone"><img src="images/arco.png"></div>
+				<div class="divMenuPrincipal_texto"><a href="#" id="menuAdicionarArco">Arco</a></div> 			
+			</div>
+			<div class="divMenuPrincipal_botao">
+				<div class="divMenuPrincipal_icone"><img src="images/aresta.png"></div>
+				<div class="divMenuPrincipal_texto"><a href="#" id="menuAdicionarAresta">Aresta</a></div> 			
+			</div>
+			<div class="divMenuPrincipal_botao">
+				<div class="divMenuPrincipal_icone"><img src="images/mover.png"></div>
+				<div class="divMenuPrincipal_texto"><a href="#" id="menuMoverVertice">Mover</a></div> 			
+			</div>
+		</div>
+		
+		<div id="divMenuLateral">
+			<h3>Algoritmos</h3>
+		 	<ul>
+				<li>Busca
+					<ul>
+						<li><a href="#">Largura</a></li>
+						<li><a href="#">Profundidade</a></li>
+					</ul>
+				</li>
+				<li>Ordenação
+					<ul>
+						<li><a href="#" id="menuAbrir">Topológica</a></li>
+					</ul>
+				</li>
+				
+				<li>Árvore Geradora Mínima
+					<ul>
+						<li><a href="#">Kruskal</a></li>
+						<li><a href="#">Prim</a></li>
+					</ul>
+				</li>
+				<li>Caminhos Mínimos
+					<ul>
+						<li><a href="#">Dijkstra</a></li>
+						<li><a href="#">Jonhson</a></li>
+					</ul>
+				</li>
+				<li>Rotulagem
+					<ul>
+						<li><a href="#">Coloração</a></li>						
+					</ul>
+				</li>
+			</ul>
+		</div>
+	
+		<div id="divMenu">
+		 	<ul>
+				<li class="arquivo"><a href="#">Arquivo</a>
+					<ul>
+						<li><a href="#" id="menuNovo">Novo</a></li>
+						<li><a href="#" id="menuAbrir">Abrir</a></li>
+						<li><a href="#" id="menuSalvar">Salvar</a></li>
+					</ul>
+				</li>
+				<li class="adicionar"><a href="#">Adicionar</a>
+					<ul>
+						<li><a href="#" id="menuAdicionarVertice">Vértice</a></li>
+						<li><a href="#" id="menuAdicionarAresta">Aresta</a></li>						
+					</ul>
+				</li>
+				<li class="adicionar"><a id="menuMoverVertice" href="#">Mover</a></li>
+			</ul>					
+		</div>
+		<!-- 
+		<div id="coordenadas"></div>
+		 -->
+		<canvas id="canvas" width="1100" height="550" onmousemove="onMouseMove(event)">			
+			O seu browser ainda não suporta HTML5 ou a tag Canvas!
+		</canvas> 
+		<br>
+		
+		<script type="text/javascript" src="js/canvas.js"></script>
+		
+		<div id="dialog-form" title="Abrir Grafo">		
+			<p>Escolha o arquivo:</p>			
+			<form id="uploadForm" action="file.php" method="POST" enctype="multipart/form-data" >
+				<input type="file" name="file" id="file"/>
+				<br>
+				<br>
+				<input type="submit" value="Carregar">				
+			</form>			
+			<form id="salveForm" action="file.php" method="POST">
+				<textarea hidden id="textAreaNovoGrafo" name="textAreaNovoGrafo" rows="12" cols="42"></textarea>			
+			</form>
+		</div>
+		
+		<div id="context_menu">
+			<ul>
+				<li id="menuEditar">Editar</li>
+				<li id="menuRemover">Remover</li>				
+			</ul>
+		</div>	
+		<!--
+		<div class="contextMenu" id="myMenu1">
+		<ul>
+			<li><a href="#">Item 1a</a></li>
+			<li><a href="#">Item 2a</a></li>
+			<li><a href="#">Item 1a</a></li>
+			<li><a href="#">Item 2a</a></li>
+		</ul>
+		</div>
+		-->
+		
+	</body>
+</html>

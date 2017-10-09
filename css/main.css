@@ -1,0 +1,234 @@
+@CHARSET "UTF-8";
+
+*{
+	margin: 0;
+	padding: 0;	
+}
+
+html {
+    background: url("../images/html-bg.png") repeat-x scroll 0 0 #FFFFFF;
+}
+
+body{
+	font-size: 14px;
+	font-family: "arial","helvetica",sans-serif;	
+}
+
+#canvas{
+	float: right;
+	margin-top: 20px;
+	margin-right: 20px;	
+	border:1px solid #c3c3c3;
+	background: none repeat scroll 0 0 white;			
+}
+
+#divLogo img{
+	margin-top: 15px;
+	margin-left: 15px;
+	width: 210px;	
+}
+
+#divMenuLateral{
+	margin-top: 25px;
+	float: left;
+	margin-left: 20px;
+	width: 104px; 
+	height: 100%;		
+}
+
+#divMenuLateral ul{
+	list-style:none;
+	width: 300px;
+	padding: 1px;		
+}
+
+#divMenuLateral ul li{	
+	margin-left: 10px;
+	padding-left: 12px;
+	padding-top: 10px;			
+}
+
+#divMenuLateral ul li a{
+	text-decoration: none;		
+}
+
+#divMenuLateral ul li a:LINK{
+	display: block;
+    padding: 2px;
+    padding-right: 400px;
+    text-decoration: none;
+    width: 300px;	
+}
+
+#divMenuLateral ul li a:HOVER {
+	background: #496eaa;
+	color: #FFF;	
+	width: 50px;			
+}
+
+
+#divMenuPrincipal{
+	margin: 0;	
+	padding: 0;	
+	float:left;		
+	margin-top: -3%;
+	margin-left: 300px;
+	width: 60%;		
+}
+
+.divMenuPrincipal_botao{
+	float: left;
+	width: 70px;	
+}
+
+.divMenuPrincipal_texto{
+	float:left;
+	margin-top: -20px;
+	margin-left: 20px;		
+}
+
+.divMenuPrincipal_texto a{
+	text-decoration: none;		
+}
+
+.divMenuPrincipal_selecionado{
+	color: #496eaa;
+	font-weight: bold;
+	text-decoration: underline;	
+}
+
+
+
+#coordenadas{
+	float: right;
+	margin-bottom: 12px;
+}	
+
+
+#divMenu{
+	
+	position: relative;
+	z-index: 1;
+	padding: 6px;
+	height: 17px;	
+	display:none;			
+}
+
+#divMenu ul{
+	list-style:none;	
+}
+
+#divMenu ul li{
+	font-size: 13px;
+	display: inline;
+	margin-left: 10px;
+	float:left; 
+	position:relative;
+	padding-left: 12px;
+}
+
+#divMenu ul li a {
+	color: #DEDEDE;	
+	text-decoration: none;	
+	padding-bottom: 10px;
+}
+
+#divMenu ul li a:HOVER {
+	color: red;	
+	text-decoration: none;
+}
+
+#divMenu ul li ul {
+	visibility:hidden; 
+	position:absolute; 
+	top:0; left:0; 
+	height:0; 
+	overflow:hidden;
+}
+
+#divMenu ul li:hover ul,
+#divMenu ul li a:hover ul {
+	visibility:visible; 
+	width:100px; 
+	height:auto; 
+	position:absolute; 
+	top:22px;	 
+	background:#fff; 
+	border:1px solid; 
+	overflow:visible;
+	padding-top:10px;	
+	
+}
+
+#divMenu ul li ul li{
+	margin-left: -10px;	
+}
+
+
+
+#divMenu ul li:hover ul li a,
+#divMenu ul li a:hover ul li a {
+	display:block; 
+	background:transparent; 
+	text-decoration:none; 
+	color: black;
+	padding-left: 20px;
+	margin-bottom: 10px;
+	padding-bottom: 5x; 
+	width:100px;;
+}
+
+#divMenu ul li ul li a:HOVER{
+	color: red;	
+}
+
+#context_menu {	
+	background-color: rgb(0, 0, 0); 
+	position: absolute; 
+	z-index: 499; 
+	display: none; 
+	width: 104px; 
+	height: 50px; 
+	left: 289px; 
+	top: 140px;
+}
+
+#context_menu ul{
+	list-style: none outside none; 
+	padding: 1px; 
+	margin: 0px; 
+	background-color: rgb(255, 255, 255); 
+	border: 1px solid rgb(153, 153, 153); 
+	width: 100px;
+}
+
+
+#context_menu ul li {
+	margin: 0px; 
+	color: rgb(0, 0, 0); 
+	display: block; 
+	cursor: default; 
+	padding: 3px; 
+	border: 1px solid rgb(255, 255, 255); 
+	background-color: transparent;
+}
+
+#context_menu ul li:hover {
+	background: #069;
+	color: #FFF;
+}
+
+#dialog-form{
+	font-size: 70%;	
+}
+
+.validateTips { border: 1px solid transparent; padding: 0.3em; }
+
+#divToolbar{
+	margin-top: 2px;
+	position: relative;
+	z-index: 1;
+	padding: 6px;
+	height: 17px;
+	border: 1px solid;
+}
