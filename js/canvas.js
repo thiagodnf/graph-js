@@ -5,9 +5,9 @@ var canvas;
 
 var originx = 0;
 var originy = 0;
-var scale = 1;
+scale = 1;
 
-var option = 0;
+option = 0;
 
 var mouseX, mouseY;
 var countVertice = 1;
@@ -16,6 +16,11 @@ var contadorDeIdsVertices =  1;
 
 var grafo = null;
 
+var canvasMinX;
+var canvasMinY;
+
+var arquivoCarregado = false;
+
 function Vertice(valor,posX,posY) {	
 	this.id = contadorDeIdsVertices++;
 	this.valor = this.id;
@@ -23,7 +28,7 @@ function Vertice(valor,posX,posY) {
 	this.posX = posX;
 	this.posY = posY;
 	this.raio = 20;	
-	this.fill = '2D2D2D';
+	this.fill = '#06D';
 	this.fillText = "white";
 }
 
@@ -31,13 +36,12 @@ function Aresta(inicio,fim, valor) {
 	this.valor = valor;
 	this.inicio = inicio;
 	this.fim = fim;		
-	this.fill = '#444444';
-	this.fillText = "red";
+	this.fill = '#C5C5C5';
+	this.fillText = "#2D2D2D";
 }
 
 
-function Grafo()
-{
+function Grafo(){
 	this.verticeSelecionado = null;
 	this.arestaSelecionada = null;
 	this.vertices = [];
@@ -45,7 +49,7 @@ function Grafo()
 	
 	this.adicionarVertice = function (valor,posX,posY){
 		if(!this.search_porValor(valor)){
-			var vertice = new Vertice(valor,posX,posY);
+			var vertice = new Vertice(valor,posX/scale,posY/scale);
 			this.vertices.push(vertice);
 			this.update();
 			return vertice;
@@ -79,13 +83,13 @@ function Grafo()
 	
 	this.removerArestas = function(idVertice)
 	{
-		for (i=0;i< this.arestas.length;i++){
+		for (var i=0;i< this.arestas.length;i++){
 			if(idVertice == this.arestas[i].inicio.id){
 				this.arestas.splice(i,1);
 				i= 0;
 			}
 		}	
-		for (i=0;i< this.arestas.length;i++){
+		for (var i=0;i< this.arestas.length;i++){
 			if(idVertice == this.arestas[i].fim.id){
 				this.arestas.splice(i,1);
 				i= 0;
@@ -95,9 +99,14 @@ function Grafo()
 	
 	this.removerAresta = function(aresta)
 	{
-		for (var i in this.arestas){
-			if(aresta == this.arestas[i]){
+		for (var i in this.arestas)
+		{
+			if(aresta == this.arestas[i])
+			{
 				this.arestas.splice(i,1);
+				arestaOposta = this.searchAresta(aresta.fim,aresta.inicio);
+				if(arestaOposta != null)
+					this.removerAresta(arestaOposta);
 				break;
 			}
 		}			
@@ -181,7 +190,7 @@ function Grafo()
 	
 	this.searchAresta = function(verticeInicio,verticeFim)
 	{
-		for(var i in this.arestas){
+		for(var i=0;i<this.arestas.length;i++){
 			if(this.arestas[i].inicio == verticeInicio && this.arestas[i].fim == verticeFim){
 				return this.arestas[i];
 			}
@@ -190,45 +199,75 @@ function Grafo()
 		return null;
 	};
 	
+	this.searchAresta_QueSaem = function(vertice)
+	{
+		var respostas = new Array();
+		
+		for(var i in this.arestas){
+			if(this.arestas[i].inicio == vertice){
+				respostas.push(this.arestas[i]);
+			}
+		}
+		
+		return respostas;
+	};
+	
 	this.verticeClicado = function(posX,posY){
 		
 		for(var i in grafo.vertices){
-			var x = grafo.vertices[i].posX;
-			var y = grafo.vertices[i].posY;
+			var x = grafo.vertices[i].posX*scale;
+			var y = grafo.vertices[i].posY*scale;
 			
-			if(Math.pow((posX-x),2)+ Math.pow((posY-y),2) <	 400){
+			if(Math.pow((posX-x),2)+ Math.pow((posY-y),2) <	 400*scale){				
 				return this.vertices[i];							
-			}		
-		}	
+			}			
+		}		
 		
 		return null;
 	};
 	
 	this.arestaClicada = function(posX,posY){
-		for(var i in this.arestas){
-			x1 = this.arestas[i].inicio.posX;
-			y1 = this.arestas[i].inicio.posY;
-			x2 = this.arestas[i].fim.posX;
-			y2 = this.arestas[i].fim.posY;
+		
+		var resposta = null;
+		var areaDoTriangulo = 999999999999999;
+		
+		for(var i in this.arestas)
+		{
+			var x1 = this.arestas[i].inicio.posX;
+			var y1 = this.arestas[i].inicio.posY;
+			var x2 = this.arestas[i].fim.posX;
+			var y2 = this.arestas[i].fim.posY;
 			
-			a = (y2-y1)/(x2-x1);
-			b = y2-a*x2;
+			var a = (y2-y1)/(x2-x1);
+			var b = y2-a*x2;
 			
-			d = Math.abs((a*posX+(-1)*posY+b))/(Math.sqrt(Math.pow(a,2)+Math.pow(b,2)));
+			var d = Math.abs( (a*posX+(-1)*posY+b))/(Math.sqrt(Math.pow(a,2)+Math.pow(b,2)));
 			
-			if(d < 0.15){
-				return this.arestas[i];
+			//Calcula a area do triangulo pelo semiperimetro
+			
+			var aa = Math.sqrt(Math.pow((posX-x1),2)+Math.pow(posY-y1,2));
+			var bb = Math.sqrt(Math.pow((posX-x2),2)+Math.pow(posY-y2,2));
+			var cc = Math.sqrt(Math.pow((x1-x2),2)+Math.pow(y1-y2,2));
+			
+			var s = (aa+bb+cc)/2;
+			
+			var area = Math.sqrt(s*(s-aa)*(s-bb)*(s-cc));
+			
+			if(d < 0.05 && area < areaDoTriangulo)
+			{
+				areaDoTriangulo = area;				
+				resposta = this.arestas[i];
 			}			
 		}
 		
-		return null;
+		return resposta;
 	};
 	
 	this.updateAresta = function()
 	{
 		for(var i in this.arestas){
 			
-			context.lineWidth = 2;
+			context.lineWidth = 1.5;
 			context.beginPath();
 			
 			fromx = this.arestas[i].inicio.posX;
@@ -244,56 +283,64 @@ function Grafo()
 		    toy = toy- 20*Math.sin(angle);
 		    tox = tox- 20*Math.cos(angle);
 		    
+		    context.strokeStyle = this.arestas[i].fill;
+		    
 		    context.moveTo(fromx, fromy);
 		    context.lineTo(tox, toy);
 		    
-		    if(this.searchAresta(this.arestas[i].fim, this.arestas[i].inicio) == null){
+		    if(this.searchAresta(this.arestas[i].fim, this.arestas[i].inicio) == null)
+		    {
+		    	context.strokeStyle = this.arestas[i].fill;
+		    	
 		    	context.lineTo(tox-headlen*Math.cos(angle-Math.PI/6),toy-headlen*Math.sin(angle-Math.PI/6));
 			    context.moveTo(tox, toy);
 			    context.lineTo(tox-headlen*Math.cos(angle+Math.PI/6),toy-headlen*Math.sin(angle+Math.PI/6));
-		    }
-				//Desenha corretamente o valor em cima da aresta.
-				//Com isso, o valor tambem se locomove conforme a movimentação da aresta
-				var xMedia = (this.arestas[i].inicio.posX - this.arestas[i].fim.posX)/2;
-				var yMedia = (this.arestas[i].inicio.posY - this.arestas[i].fim.posY)/2;
-				
-				if(xMedia >= 0 || this.arestas[i].inicio.posX <= this.arestas[i].fim.posX) 
-					xMedia *= (-1);							
-				if(yMedia >= 0 || this.arestas[i].inicio.posY <= this.arestas[i].fim.posY)
-					yMedia *=(-1);
+			}
+		    //context.fill();
+		   // context.stroke();
+			//Desenha corretamente o valor em cima da aresta.
+			//Com isso, o valor tambem se locomove conforme a movimentação da aresta
+			var xMedia = (this.arestas[i].inicio.posX - this.arestas[i].fim.posX)/2;
+			var yMedia = (this.arestas[i].inicio.posY - this.arestas[i].fim.posY)/2;
 			
-				context.font = 'bold 15px Arial';
-				context.fillStyle = this.arestas[i].fillText;
-				context.fillText(this.arestas[i].valor,this.arestas[i].inicio.posX+xMedia,this.arestas[i].inicio.posY+yMedia);
-		    
-		    
-			context.stroke();
-			
-		}
+			if(xMedia >= 0 || this.arestas[i].inicio.posX <= this.arestas[i].fim.posX) 
+				xMedia *= (-1);							
+			if(yMedia >= 0 || this.arestas[i].inicio.posY <= this.arestas[i].fim.posY)
+				yMedia *=(-1);
 		
+			context.font = 'bold 15px Arial';
+			context.fillStyle = this.arestas[i].fillText;
+			context.fillText(this.arestas[i].valor,this.arestas[i].inicio.posX+xMedia,this.arestas[i].inicio.posY+yMedia);
+		    
+			
+			context.stroke();
+			context.closePath();					
+		}		
 	};
 	
 	this.updateVertices = function()
 	{
-		for (var i in this.vertices){
+		for (var i in this.vertices)
+		{
 			context.beginPath();
-			context.fillStyle = "#"+this.vertices[i].fill;
+			context.fillStyle = this.vertices[i].fill;
 			context.arc(this.vertices[i].posX,this.vertices[i].posY,this.vertices[i].raio,0,Math.PI*2,true);
-			context.shadowOffsetX = 5;
-			context.shadowOffsetY = 5;
-			context.shadowBlur    = 4;
-			context.shadowColor   = 'gray';
-			context.closePath();
 			context.fill();
 			/*Desenha o valor do nó*/
-			context.font = 'bold 14px Arial';
+			
+			context.font = 'bold '+(14*scale)+'px Arial';
+			
 			context.fillStyle = this.vertices[i].fillText;
 			context.fillText(this.vertices[i].valor,this.vertices[i].posX-7,this.vertices[i].posY+3);
+			
+			context.closePath();
 		}	
 		
 	};
 	
-	this.update = function() {
+	
+	this.update = function() 
+	{
 		
 		this.clear();
 		
@@ -309,18 +356,78 @@ function Grafo()
 		
 		if(vertice != null){
 			document.onmousemove = function(e){	
-				grafo.setPosX(vertice,mouseX);
-				grafo.setPosY(vertice,mouseY);					
+				grafo.setPosX(vertice,mouseX/scale);
+				grafo.setPosY(vertice,mouseY/scale);					
 				grafo.update();
 			};
 			document.onmousemove(event);				
 		}	
 	};
 	
-	this.clear = function(){
+	this.getMatrizAdjacencia = function(){
+		var matriz = new Array(this.vertices.length);
+		
+		for(var i=0;i<matriz.length;i++){
+			matriz[i] = new Array(this.vertices.length);
+		}
+		
+		for(var i=0;i<matriz.length;i++){
+			for(var j=0;j<matriz.length;j++){
+				matriz[i][j] = 0;
+			}
+		}
+		
+		for(var i in this.arestas){
+			matriz[this.arestas[i].inicio.id-1][this.arestas[i].fim.id-1] = this.arestas[i].valor;  
+		}	
+		
+		return matriz;
+	};
+	
+	this.clear = function()
+	{
 		context.clearRect(0, 0, width,height);
 	};
+	
+	this.reset = function(){
+		for(var i in this.vertices){
+			this.vertices[i].fill = '#06D';
+			this.vertices[i].fillText = 'white';
+		}
+		
+		for(var i in this.arestas){
+			this.arestas[i].fill = '#C5C5C5';
+			this.arestas[i].fillText = "#2D2D2D";
+		}
+		
+		this.update();
+	};
+	
+	this.empty = function()
+	{
+		return this.vertices.length == 0;
+	}
+	
+	this.temArestasNegativas = function()
+	{
+		for(var i in this.arestas)
+		{
+			if(this.arestas[i].valor < 0)
+				return true;
+		}
+		
+		return false;
+	}
+	
+	this.zoom = function(){
+		for(var i in this.vertices){
+			//this.vertices[i].posX = this.vertices[i].posX/scale;
+			//this.vertices[i].posY = this.vertices[i].posY/scale;
+		}
+	}
+	
 }
+
 
 function onMouseDown(event){
  	this.style.cursor = 'move';
@@ -339,9 +446,9 @@ function onMouseDown(event){
     	var menu = document.getElementById("context_menu");
 	    	
     	grafo.verticeSelecionado = grafo.verticeClicado(mouseX,mouseY);
-	    	    
-	 	if(grafo.verticeSelecionado != null){	 		
-			mostrar(event);
+    	
+    	if(grafo.verticeSelecionado != null){
+    		mostrar(event);
 			menu.onmouseout = function(e){				
 				var mouseEvent = e;
 				var element = mouseEvent.relatedTarget || mouseEvent.toElement; 
@@ -429,31 +536,26 @@ function onMouseMove(event)
     	mouseX = event.offsetX;
         mouseY = event.offsetY;
     }else if(event.layerX) {
-        mouseX = event.layerX-247;
-        mouseY = event.layerY-109;
+        mouseX = event.layerX-canvasMinX;
+        mouseY = event.layerY;
     }
     //document.getElementById("coordenadas").innerHTML="Coordinates: (" + mouseX + "," + mouseY + ")";   
     
+    if(option == 3 || option == 4){
+    	
+		if(grafo.verticeSelecionado != null){
+			grafo.clear();
+			context.beginPath();
+			context.moveTo(grafo.verticeSelecionado.posX,grafo.verticeSelecionado.posY);
+			context.lineTo(mouseX/scale,mouseY/scale);
+			context.stroke();			
+			
+			grafo.updateAresta();
+			
+			grafo.updateVertices();
+		}    	
+    }
    
-    
-    //if(event.button == 0){
-    
-	    if(option == 3 || option == 4){
-	    	
-			if(grafo.verticeSelecionado != null){
-				grafo.clear();
-				context.beginPath();
-				context.moveTo(grafo.verticeSelecionado.posX,grafo.verticeSelecionado.posY);
-				context.lineTo(mouseX,mouseY);
-				context.stroke();			
-				
-				grafo.updateAresta();
-				
-				grafo.updateVertices();
-			}    	
-	    }
-    
-    //}
 }
 
 
@@ -467,53 +569,30 @@ function init(){
 	
 	context = canvas.getContext("2d");
 	
-	context.canvas.height = window.innerHeight-120;
+	canvasMinX = $("#canvas").offset().left;
+	canvasMinY = $("#canvas").offset().top;
+
+	canvas.onmousedown = onMouseDown;	
+	canvas.onmouseup = onMouseUp;
 	
+	context.canvas.height = window.innerHeight;
+	context.canvas.width = window.innerWidth-canvasMinX;
 	
 	width = canvas.width;
-	height = canvas.height;
-	
-	option=1;
+	height = canvas.height;	
 	
 	criarGrafo();	
 }
 
-window.addEventListener('load', function () {
-	init();
-	
-	canvas.onmousedown = onMouseDown;	
-	canvas.onmouseup = onMouseUp;
-	
-	document.getElementById("menuAdicionarVertice").onclick = function(e){
-		option = 1;
-		$("#menuAdicionarVertice").addClass('divMenuPrincipal_selecionado');
-		$("#menuAdicionarAresta").removeClass('divMenuPrincipal_selecionado');
-		$("#menuMoverVertice").removeClass('divMenuPrincipal_selecionado');
-		$("#menuAdicionarArco").removeClass('divMenuPrincipal_selecionado');
-		
-	};
-	document.getElementById("menuAdicionarArco").onclick = function(e){
-		option = 3;	
-		$("#menuAdicionarArco").addClass('divMenuPrincipal_selecionado');
-		$("#menuAdicionarAresta").removeClass('divMenuPrincipal_selecionado');
-		$("#menuAdicionarVertice").removeClass('divMenuPrincipal_selecionado');
-		$("#menuMoverVertice").removeClass('divMenuPrincipal_selecionado');
-	};
-	document.getElementById("menuAdicionarAresta").onclick = function(e){
-		option = 4;	
-		$("#menuAdicionarAresta").addClass('divMenuPrincipal_selecionado');
-		$("#menuAdicionarArco").removeClass('divMenuPrincipal_selecionado');
-		$("#menuAdicionarVertice").removeClass('divMenuPrincipal_selecionado');
-		$("#menuMoverVertice").removeClass('divMenuPrincipal_selecionado');
-	};
-	document.getElementById("menuMoverVertice").onclick = function(e){
-		option = 2;		
-		$("#menuMoverVertice").addClass('divMenuPrincipal_selecionado');
-		$("#menuAdicionarArco").removeClass('divMenuPrincipal_selecionado');
-		$("#menuAdicionarVertice").removeClass('divMenuPrincipal_selecionado');
-		$("#menuAdicionarAresta").removeClass('divMenuPrincipal_selecionado');
-	};
-});
+function selecionarItem(elemento,opcao)
+{
+	$("#menuAdicionarVertice").removeClass('Menu-Item-Selecionado');
+	$("#menuAdicionarArco").removeClass('Menu-Item-Selecionado');
+	$("#menuAdicionarAresta").removeClass('Menu-Item-Selecionado');
+	$("#menuMover").removeClass('Menu-Item-Selecionado');	
+	$(elemento).addClass('Menu-Item-Selecionado');
+	option = opcao;
+}
 
 function criarGrafo()
 {
@@ -521,43 +600,59 @@ function criarGrafo()
 	contadorDeIdsVertices = 1;
 }
 
-$('#canvas').bind('DOMMouseScroll', function(event) {
+
+
+
+function zoomDaTela(event){
 	
-    var mousex = event.clientX - canvas.offsetLeft;
-    var mousey = event.clientY - canvas.offsetTop;
-    var wheel = event.detail/15;//n or -n
+	var wheel = 0;
+	
+	if(event.detail)
+		wheel = event.detail/40;//n or -n
+	else if(event.wheelDelta) //Chrome
+		wheel = (event.wheelDelta>0)?-(event.wheelDelta/120+2)/40:-(event.wheelDelta/120-2)/40;	
 
     var zoom = 1 + wheel/2;
-    
-    context.translate(
-        originx,
-        originy
-    );
-    context.scale(zoom,zoom);
-    context.translate(
-        -( mousex / scale + originx - mousex / ( scale * zoom ) ),
-        -( mousey / scale + originy - mousey / ( scale * zoom ) )
-    );
 
-    originx = ( mousex / scale + originx - mousex / ( scale * zoom ) );
-    originy = ( mousey / scale + originy - mousey / ( scale * zoom ) );
+    context.scale(zoom,zoom);
     scale *= zoom;
     
+    grafo.zoom();
     grafo.update();
-    
+}
+//Para o Opera
+document.onmousewheel = zoomDaTela;
+
+$('#canvas').bind('DOMMouseScroll', function(event) {
+	zoomDaTela(event);       
 });
 
 $(document).ready(function() {
+	
+	init();
+	
+	$("#menuAdicionarVertice").click(function(e){ selecionarItem("#menuAdicionarVertice",1); });
+	$("#menuAdicionarAresta").click(function(e){ selecionarItem("#menuAdicionarAresta",3); });
+	$("#menuAdicionarArco").click(function(e){ selecionarItem("#menuAdicionarArco",4); });	
+	$("#menuMover").click(function(e){ selecionarItem("#menuMover",2); });
 	
 	$( "#dialog:ui-dialog" ).dialog( "destroy" );
 	
 	$( "#dialog-form" ).dialog({
 		autoOpen: false,
-		height: 200,
-		width: 350,
+		height: 240,
+		width: 400,
 		modal: true,
 		buttons: {
 			"Abrir": function() {
+				if( ! arquivoCarregado){
+					alert('Por favor, selecione o arquivo, clique em \'carregar\' antes de abrir.');
+					return;
+				}
+				
+				criarGrafo();						
+				grafo.update();
+				
 				var novoGrafo= $("#textAreaNovoGrafo").val().trim();
 				
 				var objJSON = JSON.parse(novoGrafo);
@@ -572,10 +667,10 @@ $(document).ready(function() {
 				for(var i in objJSON.arestas){
 					grafo.adicionarAresta_porValor(objJSON.arestas[i].verticeInicio,objJSON.arestas[i].verticeFim,objJSON.arestas[i].valor);
 				}
-								
+					
 				grafo.update();
 				$( this ).dialog( "close" );
-				
+				arquivoCarregado = false;				
 			},
 			Cancel: function() {
 				$( this ).dialog( "close" );
@@ -588,16 +683,25 @@ $(document).ready(function() {
 	
 	$( "#menuAbrir").click(function() {
 		$( "#dialog-form" ).dialog( "open" );
-	});
-	
-	
+	});	
 	
 	$('#uploadForm').ajaxForm({		 
 		beforeSubmit: function(a,f,o) {	        	
 			$('#textAreaNovoGrafo').html('Submitting...');
+			$('#statusCarregamento').text("Submitting...");
+			$('#statusCarregamento').show();
+			
+			if($("#file").val() == '')
+			{
+				alert("Escolha antes o arquivo.");
+				$('#statusCarregamento').text("Selecione antes o arquivo");
+				return false				
+			}
 	    },
-	    success: function(data) {	    	
+	    success: function(data) {	    		    	
 	    	$('#textAreaNovoGrafo').html(data);
+	    	$('#statusCarregamento').text("Carregado com Sucesso!");
+	    	arquivoCarregado = true;
 	    }
     });
 	
@@ -617,8 +721,12 @@ $(document).ready(function() {
 				grafo.verticeSelecionado.valor = valor; 
 		}else if(grafo.arestaSelecionada != null){
 			valor = prompt('Peso:',grafo.arestaSelecionada.valor);
-			if(valor != null)
-				grafo.arestaSelecionada.valor = valor; 
+			if(valor != null){
+				grafo.arestaSelecionada.valor = valor;
+				var arestaVolta = grafo.searchAresta(grafo.arestaSelecionada.fim,grafo.arestaSelecionada.inicio);
+				if(arestaVolta != null)
+					arestaVolta.valor = valor;
+			} 
 		}
 		
 		grafo.verticeSelecionado = null;
@@ -649,6 +757,26 @@ $(document).ready(function() {
 			grafo.salvar();
 		}
 	});
+	
+	$("#executarAlgoritmo").click(function(event){
+		if(grafo.empty())
+		{
+			alert("Atenção! Nenhum grafo foi criado");
+			return;
+		}	
+		
+		executarAlgoritmo(grafo,$("#selectAlgoritmos").val());		
+	});
+	
+	$("#resetarGrafo").click(function(event){
+		if(grafo.empty())
+		{
+			alert("Atenção! Nenhum grafo foi criado");
+			return;
+		}
+		grafo.reset();		
+	});
+	
 });
 
 //Retira o menu que aparece quando é clicado com o botão direito na página

@@ -16,31 +16,26 @@
 			
 			fclose($handle); 
 	  	}
-	}else{
-
+	}else{	
+		
 		//	Usado para salvar em arquivo txt
 		
-		if(!isset($_GET["grafo"])){
+		if(!isset($_POST["textAreaNovoGrafo"])){
 			echo "acesso inválido";
 			die();	
 		}
 		
-		$grafo = $_GET["grafo"];
-		
-		$arestas = explode(",",$grafo);
+		$grafo = $_POST["textAreaNovoGrafo"];
 		
 		$temp = tmpfile();
 	  
 	  	header ("Content-Type: application/download");
 		header ("Content-Disposition: attachment; filename=\"grafo.txt\"");
 
-		foreach($arestas as $aresta):
-			fwrite($temp, $aresta);
-			fwrite($temp, "\n");		
-		endforeach;
+		fwrite($temp, $grafo);
 		
 		fseek($temp, 0);
-		echo fread($temp, 1024);
+		echo fread($temp, strlen($grafo));
 		fclose($temp); // this removes the file
 		
 	}
